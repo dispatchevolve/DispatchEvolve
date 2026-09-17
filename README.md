@@ -12,7 +12,7 @@ Zirui Yuan<sup>1,*</sup> · Tengfei Lyu<sup>1,*</sup> · Kai Wan<sup>2</sup> · 
 
 <sup>*</sup> Equal contribution; work done during internship at Didichuxing Co. Ltd. &nbsp; <sup>†</sup> Corresponding author
 
-[**Project page**](https://dispatchevolve.github.io/) · [**Paper & full appendix (PDF)**](https://dispatchevolve.github.io/assets/DispatchEvolve.pdf) · [**Appendix guide**](https://dispatchevolve.github.io/#resources) · [**Offline results**](https://dispatchevolve.github.io/#results) · [**Production A/B tests**](https://dispatchevolve.github.io/#production)
+[**Project page**](https://dispatchevolve.github.io/) · [**Paper & full appendix (PDF)**](https://dispatchevolve.github.io/assets/DispatchEvolve.pdf) · [**Offline results**](https://dispatchevolve.github.io/#results) · [**Production A/B tests**](https://dispatchevolve.github.io/#production)
 
 </div>
 
