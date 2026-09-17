@@ -12,11 +12,11 @@ Zirui Yuan<sup>1,*</sup> · Tengfei Lyu<sup>1,*</sup> · Kai Wan<sup>2</sup> · 
 
 <sup>*</sup> Equal contribution; work done during internship at Didichuxing Co. Ltd. &nbsp; <sup>†</sup> Corresponding author
 
-[**Project page**](https://dispatchevolve.github.io/) · [**Paper & full appendix (PDF)**](https://dispatchevolve.github.io/assets/DispatchEvolve.pdf) · [**Offline results**](https://dispatchevolve.github.io/#results) · [**Production A/B tests**](https://dispatchevolve.github.io/#production)
+[**Project page**](https://dispatchevolve.github.io/) · [**Offline results**](https://dispatchevolve.github.io/#results) · [**Production A/B tests**](https://dispatchevolve.github.io/#production)
 
 </div>
 
-> **Research artifacts available; implementation forthcoming.** The paper, method overview, and experimental results are public. This repository does not yet contain runnable code or datasets. Release timing and licensing will be announced here.
+> **Project overview available; paper not yet public.** The method overview and experimental summaries are public. The paper and appendix are not publicly available at this time. This repository does not yet contain runnable code or datasets. Release timing and licensing will be announced here.
 
 ## Overview
 
@@ -73,7 +73,7 @@ See the [full offline comparison](https://dispatchevolve.github.io/#results) and
 
 ## Paper & appendix reading guide
 
-The [paper PDF](https://dispatchevolve.github.io/assets/DispatchEvolve.pdf) includes the complete appendix. Start with these sections depending on your question:
+The paper and appendix are not publicly available at this time. The following guide describes the manuscript structure for a future release:
 
 - **How does the loop work?** Section 3 and Appendix A: two-stage method, notation, and end-to-end algorithm.
 - **Why local search followed by global integration?** Appendix B: design rationale and the roles of guardrails and the archive.
@@ -84,7 +84,8 @@ The [paper PDF](https://dispatchevolve.github.io/assets/DispatchEvolve.pdf) incl
 
 ## Availability
 
-- **Available now:** paper with full appendix, framework illustration, offline comparisons, component analyses, and production A/B results on the [project page](https://dispatchevolve.github.io/).
+- **Available now:** framework illustration, offline comparisons, component analyses, and production A/B results on the [project page](https://dispatchevolve.github.io/).
+- **Not yet public:** paper and appendix.
 - **Forthcoming:** implementation and reproducibility artifacts. No installation command, runnable example, dataset download, or release date is available yet.
 - **License:** to be specified with the code release; no open-source license is currently granted by this repository.
 
