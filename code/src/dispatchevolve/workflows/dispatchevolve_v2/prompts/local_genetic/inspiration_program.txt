@@ -1,0 +1,4 @@
+### Inspiration {program_number} (Fitness: {score}; Type: {program_type})
+- Roles: {roles}
+- Change summary: {program_snippet}
+- Distinct measured characteristics: {unique_features}

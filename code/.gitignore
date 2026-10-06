@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.cache/
+build/
+dist/
+*.egg-info/
+workspaces/
+outputs/
+logs/
+data/
+.env
+
+# Local notes and temporary files
+docs/unapproved-content-drafts/
+docs/drafts/
+dev_log.md
+tmp/
+.DS_Store

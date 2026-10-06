@@ -1,0 +1,4 @@
+### Top Program {program_number} (Fitness: {score})
+- Roles: {roles}
+- Change summary: {program_snippet}
+- Measured metrics: {key_features}

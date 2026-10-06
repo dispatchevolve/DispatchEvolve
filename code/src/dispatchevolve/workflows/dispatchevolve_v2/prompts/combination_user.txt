@@ -1,0 +1,77 @@
+## Context
+
+### Experiment Metric Catalog
+metric | role | business_direction | meaning
+$experiment_metric_catalog
+
+Composition priority metric: $composition_priority_metric
+
+### Incumbent Integrated Strategies
+$incumbent_integrated_strategies
+
+### Selectable Local Candidate Summary
+candidate_id | scene_description | objective | opportunity_intent
+$local_candidate_summary
+
+### Candidate Policy Mapping
+candidate_id | modified_policy
+$candidate_policy_mapping
+
+### Local Candidate Performance Against Each Scene E0
+candidate_id | metric | baseline_raw | candidate_raw | raw_change | normalized_improvement | evaluated_batches | scene_coverage
+$candidate_performance
+
+### Local Candidate Evaluation Contract
+$local_candidate_evaluation_contract
+
+### Full Composition Evaluation Contract
+$full_composition_evaluation_contract
+
+### Cumulative Relation Evidence
+left_id | right_id | relation | shared_policies | predicate_intersection_status | observed_scene_overlap | relationship_description
+$relation_evidence
+
+### Pareto References
+reference_id | selected_candidate_ids | unavailable_candidate_ids | conflict_resolution_plan | raw_metrics | normalized_improvement | reference_reason
+$pareto_references
+
+### Complete Composition Attempt Registry
+attempt_id | selected_candidate_ids | conflict_resolution_plan | attempt_status | acceptance_passed
+$composition_attempt_registry
+
+### Recent Composition Attempt Feedback
+attempt_id | selected_candidate_ids | conflict_resolution_plan | normalized_improvement | violated_constraints | feedback
+$recent_composition_attempt_feedback
+
+## Conflict Resolution Semantics
+
+- A precedence edge is required only when two selected Candidates may match the same batch and modify at least one same logical Policy.
+- `higher|lower|policies` means the higher Candidate wins that shared-Policy competition when both Scenes match.
+- Include every and only the shared Policies governed by that edge.
+- The precedence graph must be acyclic.
+- A multi-Policy Local Candidate is atomic.
+- Selected Candidates without a same-Policy competition may execute together at their normal Engine Policy steps.
+
+## Requirements
+
+- Select at least one selectable Local Candidate.
+- Never select a hard-conflict pair.
+- Propose an exact Composition absent from Complete Composition Attempt Registry.
+- Consider the normalized change of every metric in Experiment Metric Catalog.
+- Subject to all supplied reward and guardrail requirements, prefer stronger improvement in `$composition_priority_metric`.
+- Use `opportunity_intent` only as the upstream reason for the Candidate; use Candidate Performance as measured local evidence.
+- Use Pareto References as full-search trade-off evidence and Recent Composition Attempt Feedback as a recent bounded history. Do not treat either block as the other.
+- Return precedence edges for every and only every newly introduced overlapping same-Policy competition.
+- Do not claim unmeasured combined or full-engine effects.
+- The order of IDs in Selected Local Candidate IDs has no priority meaning.
+- Do not use `|` or line breaks inside Rationale.
+
+## Output Contract
+
+## Selected Local Candidate IDs
+COMMA_SEPARATED_NONEMPTY_IDS
+## Conflict Resolution Plan
+ONE_LINE_PER_EDGE_AS_HIGHER_ID|LOWER_ID|COMMA_SEPARATED_SHARED_POLICIES
+OR_NONE
+## Rationale
+EVIDENCE_BASED_COMPOSITION_REASON

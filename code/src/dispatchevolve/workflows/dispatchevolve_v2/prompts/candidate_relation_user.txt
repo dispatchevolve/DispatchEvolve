@@ -1,0 +1,36 @@
+## Context
+
+### Experiment Metric Catalog
+metric | role | business_direction | meaning
+$experiment_metric_catalog
+
+### Local Candidate Summary
+candidate_id | scene_description | objective | opportunity_intent
+$local_candidate_summary
+
+### Candidate Policy Mapping
+candidate_id | modified_policy | flow_steps
+$candidate_policy_mapping
+
+### Engine Policy Execution and Data Flow
+step | policy | operation | role | reads | writes | may_filter_rows
+$engine_policy_flow
+
+### Unresolved Local Candidate Pairs
+left_id | right_id | left_batches | right_batches | intersection_batches | scene_overlap | observed_batch_relation | predicate_intersection_status | shared_policies | structural_interaction_evidence
+$unresolved_pairs
+
+## Requirements
+
+- Analyze every supplied pair exactly once.
+- Refer only to Candidate IDs and Policy paths present in the Context.
+- Refer to candidates by their IDs rather than relying only on positional words such as `left` or `right`.
+- Use Engine Policy step order to distinguish earlier, later, and repeated operations.
+- Treat `UNKNOWN` as unavailable evidence, not as `NONE`.
+- Name every Policy materially involved in the relationship, or `NONE` when no specific Policy can be established.
+- Explain the possible interaction without claiming an unmeasured combined metric result.
+- Use commas inside the affected-Policies field and do not use `|` inside the description.
+
+## Output Contract
+
+LEFT_ID|RIGHT_ID|COMMA_SEPARATED_AFFECTED_POLICIES_OR_NONE|CONCRETE_RELATIONSHIP_DESCRIPTION

@@ -1,0 +1,28 @@
+# Current Program Information
+- Current performance metrics:
+{metrics}
+- Measured improvement guidance:
+{improvement_areas}
+
+{action_context}
+
+# Program Evolution History
+{evolution_history}
+
+# Current Program
+```{language}
+{current_program}
+```
+
+# Task
+Suggest targeted changes that improve the Primary metric while satisfying every protected experiment metric.
+
+Use exactly this SEARCH/REPLACE format:
+
+<<<<<<< SEARCH
+EXACT_TEXT_FROM_CURRENT_PROGRAM
+=======
+REPLACEMENT_TEXT
+>>>>>>> REPLACE
+
+You may return multiple SEARCH/REPLACE blocks. Every SEARCH block must match the Current Program exactly. Do not rewrite the complete repository.

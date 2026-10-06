@@ -1,0 +1,36 @@
+# Paper-scale experiment template. Supply inputs and deployed model identifiers.
+run_id: paper
+mode: main
+engine_dir: ../workspaces/paper_inputs/engine
+data_path: ../workspaces/paper_inputs/evolution.csv
+test_path: ../workspaces/paper_inputs/test.csv
+backend: local
+output_dir: ../workspaces
+cache_root: ../.cache
+log_root: ../logs
+rho: 0.005
+evaluate_test_baseline: true
+online_uplift_enabled: true
+random_seed: 42  # Set independently for each run.
+model:
+  provider: openai_compatible
+  model: your-gemini-3-flash-deployment
+  api_base: https://example.invalid/v1
+  api_key_env: GENERATOR_API_KEY
+critic_model:
+  provider: openai_compatible
+  model: your-qwen3-8b-opportunity-dpo-deployment
+  api_base: https://example.invalid/v1
+  api_key_env: CRITIC_API_KEY
+online_model:
+  provider: openai_compatible
+  model: your-qwen3-8b-online-dpo-deployment
+  api_base: https://example.invalid/v1
+  api_key_env: ONLINE_CRITIC_API_KEY
+budget:
+  full_replay_equivalents: 30
+  outer_rounds: 10
+  admitted_opportunities_target: 10
+  reference_limit: 14
+  combination_evaluations_per_round: 3
+  outer_early_stopping_patience: 1

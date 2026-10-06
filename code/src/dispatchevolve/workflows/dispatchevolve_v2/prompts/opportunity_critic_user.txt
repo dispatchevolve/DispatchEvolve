@@ -1,0 +1,45 @@
+## Context
+
+### Opportunity
+Query: $query
+Scene Summary: $scene_summary
+Matched batches: $matched_batch_count / $total_batch_count
+Batch coverage: $batch_coverage
+Scene OD pairs: $scene_od_pair_count / $total_od_pair_count
+Row coverage: $row_coverage
+Objective: $objective
+Related Policies:
+$related_policies
+Improvement Plan: $improvement_plan
+Evidence Basis: $evidence_basis
+
+### Experiment Metric Catalog
+metric | role | business_direction | meaning
+$experiment_metric_catalog
+
+### Scene and Global Performance
+$scene_and_global_performance
+
+$policy_trace_text
+
+### Opportunity Review History
+query | scene_summary | objective | policy_scope | critic_decision | critic_reason | evolution_result
+$review_history
+
+## Requirements
+
+- Review the supplied Opportunity as one frozen whole. Do not replace its objective or add or remove Policies.
+- ACCEPT when the Scene evidence supports headroom in the selected objective, the Trace connects every named Policy to the Improvement Plan, and a multi-Policy set forms one coherent local task.
+- REJECT when the selected objective lacks supplied headroom evidence, a named Policy is unsupported or unrelated, the plan contradicts the supplied Trace, or a multi-Policy set does not form one coherent task.
+- Do not require pre-evolution proof of Candidate improvement or protected-metric feasibility.
+- Do not invent evidence or claim unsupplied causality.
+- Keep the reason concise and tied to the supplied evidence.
+
+## Output Contract
+
+## Decision
+ACCEPT_OR_REJECT
+## Confidence
+NUMBER_FROM_0_TO_1
+## Reason
+CONCISE_EVIDENCE_BASED_REASON

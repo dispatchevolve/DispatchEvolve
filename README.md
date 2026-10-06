@@ -16,7 +16,7 @@ Zirui Yuan<sup>1,*</sup> · Tengfei Lyu<sup>1,*</sup> · Kai Wan<sup>2</sup> · 
 
 </div>
 
-> **Project overview available; paper not yet public.** The method overview and experimental summaries are public. The paper and appendix are not publicly available at this time. This repository does not yet contain runnable code or datasets. Release timing and licensing will be announced here.
+> **Code available:** the main workflow, offline local matching, synthetic examples and Critic training tools are in [the code directory](code/README.md). The paper and appendix are not yet public.
 
 ## Overview
 
@@ -82,14 +82,29 @@ The paper and appendix are not publicly available at this time. The following gu
 - **What does deployment cost?** Appendix D: deployment cost, serving overhead, and online-uplift assessment.
 - **What does an agent see?** Appendix D: policy-trace case study and abstracted prompt templates.
 
-## Availability
+## Code and availability
 
-- **Available now:** framework illustration, offline comparisons, component analyses, and production A/B results on the [project page](https://dispatchevolve.github.io/).
-- **Not yet public:** paper and appendix.
-- **Forthcoming:** implementation and reproducibility artifacts. No installation command, runnable example, dataset download, or release date is available yet.
-- **License:** to be specified with the code release; no open-source license is currently granted by this repository.
+The [implementation](code/README.md) includes the main DispatchEvolve workflow,
+offline local bipartite matching, synthetic examples, test-set reporting and DPO
+training tools. The example generates its inputs locally; experiments on other
+inputs require an engine, replay data and model endpoints supplied by the user.
 
-Watch this repository for release announcements or use [GitHub Issues](https://github.com/dispatchevolve/DispatchEvolve/issues) for public questions.
+```bash
+git clone https://github.com/dispatchevolve/DispatchEvolve.git
+cd DispatchEvolve/code
+uv sync --locked --extra dev
+uv run python -m dispatchevolve.synthetic_demo
+```
+
+Use Python 3.12. See [main-experiment settings](code/README.md#paper-experiment-settings)
+and [Critic training](code/docs/critic-training.md) for
+configuration and training instructions.
+
+- **Code license:** [Apache-2.0](code/LICENSE), with [third-party notices](code/THIRD_PARTY_NOTICES.md).
+- **Project materials:** framework illustration and experimental summaries remain available on the [project page](https://dispatchevolve.github.io/).
+- **Paper and appendix:** not yet public.
+
+Use [GitHub Issues](https://github.com/dispatchevolve/DispatchEvolve/issues) for public questions.
 
 ## Citation
 

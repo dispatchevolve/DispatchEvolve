@@ -1,0 +1,9 @@
+## Recent Evaluated Programs
+
+{previous_attempts}
+
+## Top Programs
+
+{top_programs}
+
+{inspirations_section}

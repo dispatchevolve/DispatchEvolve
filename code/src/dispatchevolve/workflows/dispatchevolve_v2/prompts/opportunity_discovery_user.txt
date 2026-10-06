@@ -1,0 +1,46 @@
+## Context
+
+### Scene
+Query: $query
+Matched batches: $matched_batch_count / $total_batch_count
+Batch coverage: $batch_coverage
+Scene OD pairs: $scene_od_pair_count / $total_od_pair_count
+Row coverage: $row_coverage
+
+### Experiment Metric Catalog
+metric | role | business_direction | meaning
+$experiment_metric_catalog
+
+### Scene and Global Performance
+$scene_and_global_performance
+
+$policy_trace_text
+
+### Scene History
+query | scene_summary | objective | policy_scope | critic_decision | evolution_result
+$scene_history
+
+## Requirements
+
+- Make one `OPPORTUNITY_FOUND` or `NO_OPPORTUNITY` judgment from the supplied evidence.
+- Do not assume that every Scene has an optimization opportunity.
+- An Opportunity objective must be a reward metric in Experiment Metric Catalog. A guardrail metric cannot be selected as the objective.
+- For each Opportunity, name the exact Policy path or coherent set of Policy paths supported by Policy Trace Evidence.
+- State the intended policy-behavior adjustment and the supplied evidence connecting the Scene, objective, and Policies.
+- Multiple Policies belong in one row only when one coherent local task requires them together.
+- Return all distinct evidence-supported Opportunities; do not target a preferred count.
+- Do not invent evidence, claim causality that is not supplied, or predict future Candidate performance.
+- Avoid repeating a historically unsuccessful Opportunity unless the current evidence is materially different.
+- Use semicolons instead of `|` or line breaks inside a table cell.
+- Keep Scene Summary to one sentence without detailed metric values.
+- For `NO_OPPORTUNITY`, return exactly one `NONE | NONE | NONE | reason` row.
+
+## Output Contract
+
+## Scene Summary
+ONE_CONCISE_SENTENCE
+## Opportunity Status
+OPPORTUNITY_FOUND_OR_NO_OPPORTUNITY
+## Improvement Opportunities
+objective | related_policies | improvement_plan | evidence_basis
+ONE_ROW_PER_OPPORTUNITY_OR_ONE_NONE_ROW

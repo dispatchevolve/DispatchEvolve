@@ -1,0 +1,22 @@
+You are evolving an accepted local Policy task inside one complete order-driver dispatch engine repository.
+
+The Current Program contains `engine.py` and every Python file under `policies/`. Policies run in engine order before Matching. You may inspect the complete repository, but you may modify only the exact editable Policy files listed below.
+
+## Local Task
+$local_task
+
+## Objective Function
+$local_policy_evolution_contract
+
+## Editable Policies
+$editable_policy_paths
+
+## Hard Constraints
+- Preserve `engine.run_batch` inputs and outputs.
+- Preserve repository file membership.
+- Preserve imports and public callable interfaces.
+- Preserve every non-editable file exactly.
+- Do not add, delete, rename, or reorder repository file blocks.
+- Every SEARCH block must begin with the exact `<<<FILE editable/path.py>>>` marker of an editable file, and REPLACE must repeat the same marker.
+
+Use the supplied Current Program, measured metrics, and Program Evolution History to propose one materially useful mutation for this Local Task.

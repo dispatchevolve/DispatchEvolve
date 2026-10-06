@@ -1,0 +1,112 @@
+## Context
+
+### Batch Scene Query Contract
+
+The system checks the Query once for each Batch. The Query uses batch-level features to classify whether the Batch belongs to the Scene. Scene coverage is the number of matching Batches divided by the number of eligible Batches.
+
+Raw feature names cannot appear as standalone values in a query. They may appear only as arguments of these batch aggregate functions:
+
+- `count()`: number of rows in the batch.
+- `mean(FIELD)`: arithmetic mean of a numeric or Boolean field within the batch.
+- `min(FIELD)`: minimum of a numeric field within the batch.
+- `max(FIELD)`: maximum of a numeric field within the batch.
+- `sum(FIELD)`: sum of a numeric or Boolean field within the batch.
+- `nunique(FIELD)`: number of distinct non-null values of any field within the batch.
+
+The query may use:
+
+- comparisons: `>`, `>=`, `<`, `<=`, `==`, `!=`, `in`, `not in`;
+- Boolean operators: `and`, `or`, `not`;
+- numeric arithmetic: `+`, `-`, `*`, `/`;
+- numeric, Boolean, and string literals;
+- literal lists or tuples on the right side of `in` and `not in`;
+- parentheses.
+
+The Query must return either `true` or `false` for each Batch. The system checks function names, feature names, and syntax. Division by zero returns `0.0`.
+
+Valid examples:
+
+- `mean(eta) > 300`
+- `count() >= 20 and mean(is_serial) > 0.5`
+- `max(dar) - min(dar) > 0.4`
+- `nunique(order_id) / nunique(driver_id) > 1.5`
+
+Invalid examples:
+
+- `eta > 300`
+- `unknown_function(eta) > 1`
+- `mean(missing_feature) > 0`
+
+Coverage must be greater than `$coverage_min_exclusive` and $coverage_upper_relation `$coverage_max_inclusive`. The system parses the Query, checks its fields and value types, runs it over Batches, and calculates coverage. It rejects a Query that is invalid, matches nothing, falls outside the coverage range, or duplicates an earlier Query.
+
+### Feature Catalog
+
+The catalog uses one pipe-delimited line per feature:
+
+`name | type | description | stats`
+
+The header appears once. The `stats` column uses:
+
+- number: `missing=...;mean=...;min=...;max=...`;
+- boolean: `missing=...;true_rate=...`;
+- pure identifier: `missing=...;distinct=...`; raw identifier values are omitted;
+- category or string: `missing=...;distinct=...;examples=[...]`, with at most three example values;
+- datetime: `missing=...;min=...;max=...`.
+
+`NA` represents a missing or non-calculable statistic. The system escapes the delimiter inside values and sorts lines by feature name.
+
+Available features:
+$feature_catalog
+
+### Evidence Produced After Query Execution
+
+For a valid Query, the system calculates scene coverage, Policy activity, and performance. The Optimization Opportunity Architect uses that evidence to decide whether the scene contains an actionable Opportunity and writes a one-sentence Scene Summary for memory.
+
+### Scene Discovery Memory (up to $scene_memory_limit records)
+
+The memory is a scene-level projection of the shared Scene and Opportunity lifecycle store, rendered as a compact table with one header and one prior scene per line:
+
+`query | scene_summary | critic_accepted | evolution_succeeded`
+
+Column meanings:
+
+- `query`: the validated Query used for an earlier scene;
+- `scene_summary`: one concise sentence without detailed metric values, produced by the downstream scenario-analysis task;
+- `critic_accepted`: `true` when at least one Opportunity was accepted by the Opportunity Quality Gatekeeper, otherwise `false` when review is complete;
+- `evolution_succeeded`: `true` when at least one accepted Opportunity completed Local Policy Evolution successfully, otherwise `false` when all applicable runs are complete.
+
+Unavailable values use `NA`. The renderer escapes line breaks and the `|` delimiter inside Query text or summaries. It shows the latest `$scene_memory_limit` records, newest first. Duplicate checks still use the complete durable archive, not only the displayed records.
+
+Illustrative rendered memory:
+
+```text
+query | scene_summary | critic_accepted | evolution_succeeded
+mean(eta) > 300 | High batch-level arrival time may expose dispatch inefficiency. | true | false
+count() >= 20 and mean(is_serial) > 0.5 | Dense serial-order batches may require different dispatch behavior. | false | NA
+```
+
+The history does not contain concrete performance metrics, coverage values, trace details, objective selections, policy lists, or candidate code. Use its queries and compact downstream feedback to avoid rediscovering equivalent or repeatedly unproductive scenes.
+
+$scene_memory
+
+### Previous Query Execution Feedback
+
+The feedback is `null` on the first attempt. On a retry, it contains the previous query, a deterministic failure category, an explanation, and measured coverage when available.
+
+$query_feedback
+
+## Requirements
+
+- Consider all supplied context when forming the response.
+- Use only the supplied feature names and the Batch Scene Query Contract.
+- Return one coherent, interpretable batch-level situation rather than a row-level condition.
+- When previous execution feedback is present, do not repeat the rejected query unchanged.
+- State what batch-level situation the query examines and why its post-query evidence could be informative.
+
+## Output Contract
+
+Return exactly:
+## Query
+ONE_EXECUTABLE_BATCH_LEVEL_SCENE_QUERY
+## Discovery Purpose
+WHAT_BATCH_LEVEL_SITUATION_THE_QUERY_EXAMINES_AND_WHY_IT_MAY_CONTAIN_OPTIMIZATION_HEADROOM

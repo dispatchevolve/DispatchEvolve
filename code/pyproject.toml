@@ -1,0 +1,29 @@
+[project]
+name = "dispatchevolve"
+version = "0.2.0"
+license = {file = "LICENSE"}
+description = "Trace-grounded policy evolution and Pareto-guided engine integration"
+requires-python = ">=3.12,<3.13"
+dependencies = ["litellm[google]>=1.50", "numpy>=1.24", "pandas>=2.0", "pyyaml>=6.0", "tqdm>=4.60", "dacite>=1.8", "scikit-learn", "pyarrow", "scipy"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+dispatchevolve = "dispatchevolve.workflows.dispatchevolve_v2.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dispatchevolve = ["optimizer/genetic/prompts/defaults/*", "optimizer/genetic/LICENSE_OPenevolve", "workflows/dispatchevolve_v2/prompts/*.json", "workflows/dispatchevolve_v2/prompts/*.txt", "workflows/dispatchevolve_v2/prompts/local_genetic/*", "tasks/full_dispatch/feature_info.json", "tasks/full_dispatch/label_info.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+
+[tool.setuptools]
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "licenses/*.txt", "src/dispatchevolve/optimizer/genetic/LICENSE_OPenevolve"]

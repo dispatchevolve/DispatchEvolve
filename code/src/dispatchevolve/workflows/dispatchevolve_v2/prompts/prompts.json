@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "version": "v2-targeted-prompt-revision-2026-07-31",
+  "roles": {
+    "scenario_discovery_query": {
+      "description": "Propose one executable complete-batch Scene Query.",
+      "templates": {
+        "system": "scenario_discovery_query_system.txt",
+        "user": "scenario_discovery_query_user.txt"
+      }
+    },
+    "opportunity_discovery": {
+      "description": "Discover evidence-supported reward-and-Policy Opportunities without predicting Candidate results.",
+      "templates": {
+        "system": "opportunity_discovery_system.txt",
+        "user": "opportunity_discovery_user.txt"
+      }
+    },
+    "opportunity_critic": {
+      "description": "Review one frozen Opportunity's evidence and Policy scope without pre-evolution feasibility prediction.",
+      "templates": {
+        "system": "opportunity_critic_system.txt",
+        "user": "opportunity_critic_user.txt"
+      }
+    },
+    "candidate_relation": {
+      "description": "Explain unresolved Candidate interactions using short IDs and the complete ordered Engine Policy flow.",
+      "templates": {
+        "system": "candidate_relation_system.txt",
+        "user": "candidate_relation_user.txt"
+      }
+    },
+    "combination": {
+      "description": "Compose Candidates across configurable experiment metrics with one configurable priority reward.",
+      "templates": {
+        "system": "combination_system.txt",
+        "user": "combination_user.txt"
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "observed_assignment": "Whether the pair was assigned.",
+  "observed_acceptance": "Whether the assignment was accepted.",
+  "observed_completion": "Whether the service completed."
+}

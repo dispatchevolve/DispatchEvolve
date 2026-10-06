@@ -1,0 +1,26 @@
+# Quick synthetic smoke test; paper settings are in paper.yaml.
+run_id: example
+mode: main
+test_path: ../workspaces/synthetic_inputs/test.csv
+evaluate_test_baseline: true
+rho: 0.005
+engine_dir: ../workspaces/synthetic_inputs/engine
+data_path: ../workspaces/synthetic_inputs/synthetic.csv
+backend: local
+output_dir: ../workspaces
+cache_root: ../.cache
+log_root: ../logs
+online_uplift_enabled: true
+model:
+  provider: openai_compatible
+  model: your-model
+  api_base: https://api.openai.com/v1
+  api_key_env: OPENAI_API_KEY
+budget:
+  full_replay_equivalents: 30
+  outer_rounds: 1
+  parallel_opportunities: 1
+  proposal_attempts_per_round: 2
+  admitted_opportunities_target: 1
+  local_iterations_per_opportunity: 2
+  local_evaluations_per_opportunity: 2
