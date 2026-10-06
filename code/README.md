@@ -96,11 +96,9 @@ The main implementation is under `src/dispatchevolve/workflows/dispatchevolve_v2
 
 The six implementation groups above cover the core workflow. Setting
 `online_uplift_enabled: false` explicitly uses an offline hypervolume fallback.
-The release targets the DispatchEvolve main offline experiment: evolution on
+The release implements the DispatchEvolve main offline experiment: evolution on
 the training split, frozen engine selection, then held-out test reporting.
-It does not bundle the six comparison-method runners, ablation experiments,
-online A/B experiments or paper-specific plotting runs. The synthetic example
-and Critic training utilities support this main workflow.
+The synthetic example and Critic training utilities support this workflow.
 
 The public evaluator uses a general matching schema and a local matcher.
 See [public fields and metric formulas](docs/public-data-model.md)
@@ -181,10 +179,10 @@ Test results are written after search and are not supplied to candidate selectio
 ## Critic training
 
 See [DPO data preparation and training](docs/critic-training.md).
-The guide covers outcome-derived opportunity labels, explicit historical online
-preferences, group-isolated validation, token-length checks and separate critic
-checkpoints. Supply training records and train the adapters on a GPU.
-The structural preflight and synthetic examples run on a CPU.
+The guide covers opportunity labels derived from trial outcomes, historical
+online preferences, validation splits by group, token-length checks and separate
+critic checkpoints. Prepare training records on a CPU and train the adapters on
+a GPU.
 
 ## Tests
 

@@ -9,11 +9,9 @@ and a launcher. Supply labeled records to train the adapters.
 The launcher follows LLaMA-Factory's documented
 [ShareGPT preference format](https://github.com/hiyouga/LLaMA-Factory/blob/main/data/README.md#preference-dataset-1)
 and [Qwen3 LoRA DPO configuration](https://github.com/hiyouga/LLaMA-Factory/blob/main/examples/train_lora/qwen3_lora_dpo.yaml).
-The configuration reference is upstream revision
-`ce9dc9e072f80fa3abe0989d4ab90da25f083438`. Pin the LLaMA-Factory revision in your GPU
-environment. The launcher records the installed package version. Included
-validation covers CPU data preparation and configuration checks; GPU training
-and convergence evaluation remain to be run.
+Run data preparation and configuration checks on a CPU, then train the adapters
+in a GPU environment with LLaMA-Factory installed. The launcher records the
+installed package version.
 
 ## Opportunity supervision
 
@@ -26,9 +24,8 @@ Run the corresponding local optimization with a fixed budget. Aggregate the
 trial at the opportunity level: prefer ACCEPT if at least one evaluated candidate
 has strictly positive oriented gain on the primary objective and all protected
 metrics stay within the configured regression tolerance; otherwise prefer
-REJECT. Do not label an infrastructure failure, missing evaluation, or interrupted
-trial as an unproductive optimization opportunity. The supplied builder excludes
-records whose `evaluation_status` is not `completed`.
+REJECT. Use completed trials for supervision. The builder excludes records whose
+`evaluation_status` is not `completed`, including failed or interrupted evaluations.
 
 Supply one JSONL object per labeled opportunity, with these fields:
 
@@ -42,25 +39,21 @@ Supply one JSONL object per labeled opportunity, with these fields:
   `order_ar`, `mean_gmv`, `mean_eta`, `mean_pcaa`, `mean_dcaa`, `mean_fqs` and `order_br`.
 - `evaluation_status`: `completed` only for a completed, valid trial.
 - `responses`: two full strings under `ACCEPT` and `REJECT`, following the runtime
-  Decision/Confidence/Reason headings. These are candidate responses, not observed
-  ground truth; their preference comes from the measured trial outcome.
+  Decision/Confidence/Reason headings. The measured trial outcome determines
+  which response is preferred.
 
 The paper display name CR maps to `mean_fqs`, the matched-pair mean of
 `DAR * (1 - DCAA) * (1 - PCAA)`.
 
 There are seven delta fields: six reward coordinates and one protected matching
-coverage coordinate. The builder derives the preferred answer rather than taking
-an independently supplied opportunity label. Prepare deltas from the best feasible
-candidate when one exists; if none exists, use the best evaluated unsuccessful
-candidate and retain that selection rule in your experiment records. The builder
-validates supplied values, but cannot reconstruct omitted trial histories.
+coverage coordinate. The builder derives the preferred answer from these deltas.
+Use the best feasible candidate when one exists; otherwise use the best evaluated
+unsuccessful candidate. Record the candidate selection rule with the trial results.
 
-Generate or author both responses using only the pre-optimization evidence and
-check that each actually expresses its named decision. Do not train a critic by
-copying the outcome into its input. The raw records from workflow
-`dpo_data_collection` are an intermediate source; convert their frozen prompts,
-trial outcomes and selected candidate deltas into this explicit schema. They are
-not automatically interchangeable with labeled DPO pairs.
+Write both responses from pre-optimization evidence, with each response expressing
+its named decision. Keep trial outcomes in the labels, separate from model inputs.
+To use records from `dpo_data_collection`, convert their frozen prompts, trial
+outcomes and selected candidate deltas into the schema above.
 
 ```bash
 uv run python -m dispatchevolve.critic_data --kind opportunity \
@@ -68,8 +61,8 @@ uv run python -m dispatchevolve.critic_data --kind opportunity \
   --output-dir workspaces/opportunity_dpo --rho 0.005
 ```
 
-Use the same `rho` and normalization contract as the source trials. Zero gain is
-not success. Small floating-point comparisons use a tolerance of `1e-12`.
+Use the same `rho` and normalization as the source trials. Acceptance requires
+positive gain; floating-point comparisons use a tolerance of `1e-12`.
 
 ## Online assessor supervision
 
@@ -81,15 +74,14 @@ significance results and deployment decisions from the model input.
 The preparation schema uses `group_id`, `system`, `user`, `responses` with keys
 `A` and `B`, and `preferred` equal to `A`, `B` or null. Prefer the engine supported
 by an unambiguous historical production decision after considering the relevant
-metrics and guardrails. A null preference excludes an ambiguous pair; do not
-force a winner or replace the decision with an invented scalar score. The full
-responses should be exactly `A` and `B` to match inference.
+metrics and guardrails. Set `preferred` to null to exclude an ambiguous pair.
+Use the complete responses `A` and `B` to match inference.
 
 Randomize presentation order in real training data and remap the winner with it.
 All pairs sharing an experiment or related engine family must stay in one group;
-use connected groups when experiments share engines. Add explicit tests for
-position bias and performance on genuinely held-out engine families. The builder
-does not infer these relationships; the data owner must assign them correctly.
+use connected groups when experiments share engines. Assign these group IDs
+before data preparation. Evaluate position bias and accuracy on held-out engine
+families.
 
 ```bash
 uv run python -m dispatchevolve.critic_data --kind online \
@@ -114,8 +106,8 @@ uv run python scripts/train_critic_dpo.py --config configs/online_critic_dpo.yam
 
 Each synthetic command creates ten artificial pairs from ten artificial groups:
 eight training groups/pairs and two validation groups/pairs, with zero group
-overlap. They exercise formats only and are unsuitable for learning a useful
-critic. Choose unused output directories; builders refuse to overwrite data.
+overlap. Use these examples to check the data format and training setup; use
+labeled trial records to train the critics. Choose empty output directories.
 
 For real inputs the builder writes `train.jsonl`, `eval.jsonl`,
 `dataset_info.json` and `manifest.json`. Splitting is deterministic by group hash;
@@ -127,10 +119,8 @@ Reserve separate final test groups for evaluation after training.
 
 On a suitable GPU machine, install LLaMA-Factory using its
 [official installation instructions](https://github.com/hiyouga/LLaMA-Factory#installation).
-Use its Python environment for the launcher; the core project's uv environment
-does not install GPU training dependencies automatically. Edit the relevant
-configuration for your base model, compatible template, prepared dataset and
-available hardware.
+Run the launcher in the LLaMA-Factory Python environment. Configure the base
+model, compatible template, prepared dataset and available hardware.
 
 ```bash
 python scripts/train_critic_dpo.py --config configs/critic_dpo.yaml
@@ -155,11 +145,10 @@ preflight metadata are written under `workspaces/training_preflight/`. Logs go t
 output directories default to `workspaces/critic-dpo/` and
 `workspaces/online-critic-dpo/`; nonempty outputs are rejected.
 
-Serve each frozen adapter through a compatible endpoint using your chosen serving
-setup. In the workflow YAML configure `critic_model` for the opportunity adapter
-and `online_model` for the online adapter, with `online_uplift_enabled: true`.
-Deploy the checkpoints with your model-serving system. Evaluate response format,
-held-out label accuracy and presentation-order bias.
+Serve each frozen adapter through a compatible endpoint. In the workflow YAML,
+set `critic_model` to the opportunity adapter and `online_model` to the online
+adapter, with `online_uplift_enabled: true`. Evaluate response format, held-out
+label accuracy and presentation-order bias.
 
 ## Data and outputs
 
