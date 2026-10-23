@@ -1,9 +1,8 @@
 <div align="center">
-  <h1>DispatchEvolve</h1>
-  <img src="assets/logo.png" alt="DispatchEvolve logo" width="220" />
+  <p><img src="assets/logo.png" alt="DispatchEvolve" width="180" /></p>
   <p>
-    <img src="https://img.shields.io/badge/version-0.2.0-blue" alt="Version 0.2.0" />
-    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License Apache-2.0" /></a>
+    <a href="pyproject.toml"><img src="https://img.shields.io/badge/version-0.2.0-blue" alt="Version 0.2.0" height="20" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License Apache-2.0" height="20" /></a>
   </p>
 </div>
 
