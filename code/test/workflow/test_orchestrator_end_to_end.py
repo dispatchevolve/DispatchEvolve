@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from dispatchevolve.workflows.dispatchevolve_v2.config import BudgetConfig, ModelConfig, V2Config
 from dispatchevolve.workflows.dispatchevolve_v2.contracts import LocalCandidate, METRIC_KEYS, OBJECTIVE_KEYS
@@ -33,8 +34,9 @@ def _first_table_id(text: str, heading: str) -> str:
     return lines[start].split("|", 1)[0].strip()
 
 
+@pytest.mark.parametrize("import_style", ["module", "alias", "direct", "direct_alias"])
 def test_one_round_executes_local_search_and_deterministic_compilation(
-    tmp_path: Path, monkeypatch,
+    tmp_path: Path, monkeypatch, import_style,
 ) -> None:
     data = pd.DataFrame({
         "batch_id": list(range(100)), "product_id": [1] * 100,
@@ -76,6 +78,18 @@ def test_one_round_executes_local_search_and_deterministic_compilation(
         "'filter_rule_counts': {}, 'filter_policy_counts': {}}\n"
         "    return result, trace_payload\n"
     )
+
+    if import_style != "module":
+        engine = engine_dir / "engine.py"
+        text = engine.read_text()
+        if import_style == "alias":
+            text = text.replace("from policies import candidate_filter", "from policies import candidate_filter as policy_alias")
+            text = text.replace("candidate_filter.apply(", "policy_alias.apply(")
+        else:
+            name = "apply" if import_style == "direct" else "policy_apply"
+            text = text.replace("from policies import candidate_filter", "from policies.candidate_filter import apply as " + name)
+            text = text.replace("candidate_filter.apply(", name + "(")
+        engine.write_text(text)
 
     def fake_complete(self, prompt):
         if prompt.role == "scenario_discovery_query":

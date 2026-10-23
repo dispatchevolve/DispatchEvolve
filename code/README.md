@@ -213,6 +213,13 @@ online preferences, validation splits by group, token-length checks and separate
 critic checkpoints. Prepare training records on a CPU and train the adapters on
 a GPU.
 
+## Candidate execution
+
+Candidate workers use OS filesystem restrictions: macOS Sandbox or Linux
+Landlock ABI 3 and newer. Workers can read the engine and Python runtime, and
+write within their individual execution directory. Worker startup requires an
+available filesystem isolation backend.
+
 ## Tests
 
 ```bash

@@ -277,7 +277,9 @@ def integrate(
     current_expressions = {identifier: dict(candidates[identifier].scenario.expression) for identifier in proposal.candidate_ids}
     conflict_plan = tuple(dict(item) for item in proposal.priority_plan.precedence_edges)
     source = (incumbent / "engine.py").read_text(encoding="utf-8")
-    tree = ast.parse(source, "engine.py")
+    from .engine_instrumentation import normalize_policy_imports
+    tree = normalize_policy_imports(ast.parse(source, "engine.py"))
+    source = ast.unparse(tree)
     module_aliases: dict[str, str] = {}
     for node in tree.body:
         if isinstance(node, ast.Import):
@@ -307,7 +309,7 @@ def integrate(
     )
     compiler = f'''
 
-V2_DETERMINISTIC_INTEGRATION_VERSION = "v2-fixed-e0-precedence-graph-v2"
+V2_DETERMINISTIC_INTEGRATION_VERSION = "v2-fixed-e0-precedence-graph-v3"
 V2_SELECTED_CANDIDATE_IDS = {tuple(proposal.candidate_ids)!r}
 V2_TOPOLOGICAL_EXECUTION_ORDER = {tuple(proposal.priority_plan.ordered_candidate_ids)!r}
 V2_CONFLICT_RESOLUTION_PLAN = {conflict_plan!r}

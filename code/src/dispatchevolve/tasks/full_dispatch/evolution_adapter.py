@@ -38,6 +38,7 @@ def evaluator_implementation_document() -> dict[str, Any]:
         task_root / "evaluator.py",
         task_root / "candidate_executor.py",
         task_root / "candidate_worker.py",
+        task_root / "candidate_filesystem.py",
         task_root / "column_policy.py",
         task_root / "utils.py",
     )

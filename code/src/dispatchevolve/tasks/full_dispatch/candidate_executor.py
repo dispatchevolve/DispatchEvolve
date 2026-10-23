@@ -63,6 +63,7 @@ def _candidate_worker_fingerprint() -> str:
     """Bind runner identity to the executable worker implementation."""
     return hashlib.sha256(
         Path(__file__).with_name("candidate_worker.py").read_bytes()
+        + Path(__file__).with_name("candidate_filesystem.py").read_bytes()
     ).hexdigest()
 
 
@@ -352,6 +353,7 @@ class LocalProcessCandidateRunner:
             "rlimit_nofile": 64,
             "rlimit_nproc": self.batch_child_process_limit,
             "python_process_creation": "disabled",
+            "filesystem_isolation": "macos_sandbox" if sys.platform == "darwin" else "linux_landlock",
             "module_state": "fresh_per_batch",
             "candidate_process_workers": self.candidate_process_workers,
             "parallel_bundle_batches": self.parallel_bundle_batches,

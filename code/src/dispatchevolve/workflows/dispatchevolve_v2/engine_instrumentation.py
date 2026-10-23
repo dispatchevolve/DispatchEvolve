@@ -6,9 +6,9 @@ import ast
 from pathlib import Path
 
 
-_VERSION = "v2-runtime-trace-v3"
+_VERSION = "v2-runtime-trace-v4"
 _HELPERS = r'''
-V2_TRACE_INSTRUMENTATION_VERSION = "v2-runtime-trace-v3"
+V2_TRACE_INSTRUMENTATION_VERSION = "v2-runtime-trace-v4"
 
 def _v2_row_evidence(frame, mask):
     values = sorted(int(value) for value in frame.loc[mask, "__engine_row_order"].tolist())
@@ -73,15 +73,46 @@ def _v2_trace_after(target, policy_call, policy_file, before, events):
 '''
 
 
-def _policy_modules(tree: ast.Module) -> set[str]:
-    modules: set[str] = set()
+def normalize_policy_imports(tree: ast.Module) -> ast.Module:
+    """Represent direct policy-function imports as module-qualified references."""
+    bindings = {}
+    body = []
+    used = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom) and node.module and node.module.startswith("policies."):
+            if any(alias.name == "*" for alias in node.names):
+                raise ValueError("policy wildcard imports are unsupported")
+            name = "_policy_module_" + str(len(bindings))
+            while name in used:
+                name += "_"
+            used.add(name)
+            body.append(ast.Import(names=[ast.alias(name=node.module, asname=name)]))
+            for alias in node.names:
+                bindings[alias.asname or alias.name] = (name, alias.name)
+        else:
+            body.append(node)
+    tree.body = body
+    class References(ast.NodeTransformer):
+        def visit_Name(self, node):
+            if isinstance(node.ctx, ast.Load) and node.id in bindings:
+                module, symbol = bindings[node.id]
+                return ast.copy_location(ast.Attribute(ast.Name(module, ast.Load()), symbol, ast.Load()), node)
+            return node
+    return ast.fix_missing_locations(References().visit(tree))
+
+
+def _policy_modules(tree: ast.Module) -> dict[str, str]:
+    modules = {}
     for node in tree.body:
         if isinstance(node, ast.ImportFrom) and node.module == "policies":
-            modules.update(alias.asname or alias.name for alias in node.names)
+            modules.update((alias.asname or alias.name, alias.name) for alias in node.names)
+        elif isinstance(node, ast.Import):
+            modules.update((alias.asname, alias.name.removeprefix("policies."))
+                           for alias in node.names if alias.asname and alias.name.startswith("policies."))
     return modules
 
 
-def _policy_call(node: ast.stmt, modules: set[str]) -> tuple[str, str, str, str] | None:
+def _policy_call(node: ast.stmt, modules: dict[str, str]) -> tuple[str, str, str, str] | None:
     call = None
     if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
         call = node.value
@@ -92,10 +123,11 @@ def _policy_call(node: ast.stmt, modules: set[str]) -> tuple[str, str, str, str]
     if not isinstance(call.func.value, ast.Name) or call.func.value.id not in modules:
         return None
     module, symbol = call.func.value.id, call.func.attr
-    return f"{module}.{symbol}", f"policies/{module}.py", module, symbol
+    logical = modules[module]
+    return f"{logical}.{symbol}", "policies/" + logical.replace(".", "/") + ".py", module, symbol
 
 
-def _instrument_policy_function(function: ast.FunctionDef, modules: set[str]) -> None:
+def _instrument_policy_function(function: ast.FunctionDef, modules: dict[str, str]) -> None:
     if "policy_events" not in {argument.arg for argument in function.args.args}:
         function.args.args.append(ast.arg(arg="policy_events"))
         function.args.defaults.append(ast.Constant(None))
@@ -164,7 +196,7 @@ def instrument_engine(engine_dir: Path) -> Path:
         return engine_path
     if "V2_TRACE_INSTRUMENTATION_VERSION" in source:
         raise ValueError("V2 trace instrumentation upgrades require a fresh engine snapshot")
-    tree = ast.parse(source, str(engine_path))
+    tree = normalize_policy_imports(ast.parse(source, str(engine_path)))
     modules = _policy_modules(tree)
     policy_functions = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_run_target_policies"]
     run_functions = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "run_batch"]

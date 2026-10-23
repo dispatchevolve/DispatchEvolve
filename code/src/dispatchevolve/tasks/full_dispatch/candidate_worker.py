@@ -23,6 +23,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from candidate_filesystem import restrict_filesystem
+
 import numpy as np
 import pandas as pd
 import pyarrow as pa
@@ -382,6 +384,7 @@ def run_candidate_loop(
         resource.setrlimit(resource.RLIMIT_NPROC, (process_limit, process_limit))
     _disable_python_process_creation()
     os.environ["TMPDIR"] = "/nonexistent"
+    restrict_filesystem(engine_dir)
     loader = _FreshCandidateLoader(engine_dir)
     while True:
         control = channel.recv(1)
