@@ -1,4 +1,36 @@
+<div align="center">
+  <img src="assets/logo.png" alt="DispatchEvolve logo" width="360" />
+</div>
+
 # DispatchEvolve
+
+<div align="center">
+  <img src="https://img.shields.io/badge/version-0.2.0-blue" alt="Version 0.2.0" />
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License Apache-2.0" /></a>
+</div>
+
+## Overview
+
+Open-source code for the paper **DispatchEvolve: Autonomous Policy Evolution for
+Industrial Ride-Hailing Dispatch Engines with Multi-Objective Constraints**.
+
+DispatchEvolve evolves dispatch policies under multiple objectives and feasibility
+constraints. It connects trace-grounded local policy search with complete-engine
+validation through two stages:
+
+1. **Trace-Grounded Local Policy Evolution:** discover scenario-specific
+   opportunities from decision traces, assess them with an Opportunity Critic,
+   and evolve the relevant policies using local replay and metric guardrails.
+2. **Pareto-Guided Global Engine Integration:** analyze candidate interactions,
+   compose and evaluate complete engines, retain feasible Pareto improvements,
+   and rank archived engines with an online-uplift assessor.
+
+Evolution uses the training split. The selected engine is frozen before reporting
+results on the held-out test split. The repository includes workflow prompts,
+experiment configurations, local matching, synthetic examples and Critic
+training tools.
+
+![DispatchEvolve paper overview: local policy evolution and global engine integration](assets/method-overview.png)
 
 Core implementation and a runnable synthetic example of trace-grounded local
 policy evolution and Pareto-guided engine integration. The example generates
@@ -7,7 +39,7 @@ engine, replay inputs and model endpoints supplied by the user.
 
 ## Run the complete example
 
-Use Python 3.12 and uv, from the repository root:
+From the directory containing this README and `pyproject.toml`, run:
 
 ```bash
 uv sync --locked --extra dev
@@ -187,7 +219,7 @@ a GPU.
 ## Tests
 
 ```bash
-uv run pytest test/ -q
+uv run pytest test/workflow/ -q
 ```
 
 The tests include a real one-round synthetic run with only the external LLM
