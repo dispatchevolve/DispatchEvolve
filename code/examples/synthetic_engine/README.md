@@ -1,5 +1,19 @@
-# Synthetic engine
+# Synthetic example
 
-The initial rule scores generated candidate pairs by travel cost. Local evolution can replace it with an inverse-cost rule. The product
-identifier selects a schema route. This engine was written for the demonstration
-and operates on generated inputs.
+The example uses generated request-resource pairs and an engine with one ranking
+policy. Scripted model responses replace the initial travel-cost rule with an
+inverse-cost rule. Use `--live` to generate decisions with a model endpoint.
+
+Run commands from the project directory containing `pyproject.toml`:
+
+```bash
+uv run python -m dispatchevolve.synthetic_demo
+```
+
+Search uses `synthetic.csv`; the final evaluation uses the separate `test.csv`.
+`workspaces/synthetic_demo/summary.json` contains baseline and selected-engine
+metrics, improvements and replay cost. Some objectives remain unchanged in this
+example, so its FAI is zero.
+
+Use `--output-dir workspaces/another_demo` for another run. Each run requires an
+unused output directory.
